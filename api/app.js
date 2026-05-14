@@ -1,11 +1,15 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const path = require('path');
+
+require('dotenv').config();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '../')));
 
 // 创建数据库连接池（更适合Serverless环境）
 let pool;
