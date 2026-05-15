@@ -72,6 +72,17 @@ async function loadMessages() {
     
     try {
         const response = await fetch('/api/messages');
+        
+        if (!response.ok) {
+            throw new Error(`服务器返回 ${response.status} ${response.statusText}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            throw new Error(`响应格式错误，期望JSON但收到: ${text.substring(0, 100)}`);
+        }
+        
         const data = await response.json();
         
         if (data.success && data.messages.length > 0) {
@@ -90,7 +101,7 @@ async function loadMessages() {
         }
     } catch (error) {
         container.innerHTML = '<div class="empty-message">加载留言失败，请稍后重试</div>';
-        console.error('加载留言失败:', error);
+        console.error('加载留言失败:', error.message);
     }
 }
 
@@ -120,6 +131,16 @@ async function submitMessage() {
             body: JSON.stringify({ name, contact, content })
         });
         
+        if (!response.ok) {
+            throw new Error(`服务器返回 ${response.status} ${response.statusText}`);
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const text = await response.text();
+            throw new Error(`响应格式错误，期望JSON但收到: ${text.substring(0, 100)}`);
+        }
+        
         const data = await response.json();
         
         if (data.success) {
@@ -131,8 +152,8 @@ async function submitMessage() {
             showMessage(data.message || '提交失败，请稍后重试', 'error');
         }
     } catch (error) {
-        showMessage('提交失败，请稍后重试', 'error');
-        console.error('提交留言失败:', error);
+        showMessage('提交失败: ' + error.message, 'error');
+        console.error('提交留言失败:', error.message);
     }
 }
 
