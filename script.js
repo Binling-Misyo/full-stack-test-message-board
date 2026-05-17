@@ -11,22 +11,23 @@ function generateCaptcha() {
 
 function drawCaptcha() {
     const canvas = document.getElementById('captchaCanvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    
+
     canvas.width = 120;
     canvas.height = 45;
-    
+
     ctx.fillStyle = '#f5f5f5';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     captchaCode = generateCaptcha();
-    
+
     ctx.font = 'bold 24px Arial';
     ctx.textAlign = 'center';
-    
+
     const colors = ['#333', '#666', '#999', '#555'];
     const positions = [15, 35, 55, 75];
-    
+
     for (let i = 0; i < captchaCode.length; i++) {
         ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
         ctx.save();
@@ -35,7 +36,7 @@ function drawCaptcha() {
         ctx.fillText(captchaCode[i], 0, 0);
         ctx.restore();
     }
-    
+
     for (let i = 0; i < 8; i++) {
         ctx.strokeStyle = '#ccc';
         ctx.beginPath();
@@ -43,7 +44,7 @@ function drawCaptcha() {
         ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
         ctx.stroke();
     }
-    
+
     for (let i = 0; i < 20; i++) {
         ctx.fillStyle = '#ddd';
         ctx.beginPath();
@@ -57,34 +58,40 @@ function refreshCaptcha() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    drawCaptcha();
-    loadMessages();
-    
-    const form = document.getElementById('messageForm');
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitMessage();
-    });
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageForm = document.getElementById('messageForm');
+
+    if (messagesContainer) {
+        loadMessages();
+    }
+
+    if (messageForm) {
+        drawCaptcha();
+        messageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitMessage();
+        });
+    }
 });
 
 async function loadMessages() {
     const container = document.getElementById('messagesContainer');
-    
+
     try {
         const response = await fetch('/api/messages');
-        
+
         if (!response.ok) {
             throw new Error(`服务器返回 ${response.status} ${response.statusText}`);
         }
-        
+
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await response.text();
             throw new Error(`响应格式错误，期望JSON但收到: ${text.substring(0, 100)}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (data.success && data.messages.length > 0) {
             container.innerHTML = data.messages.map(message => `
                 <div class="message-item">
@@ -110,18 +117,22 @@ async function submitMessage() {
     const contact = document.getElementById('contact').value.trim();
     const content = document.getElementById('content').value.trim();
     const captcha = document.getElementById('captcha').value.trim();
-    
+    const submitBtn = document.getElementById('submitBtn');
+
     if (!name || !contact || !content || !captcha) {
         showMessage('请填写完整信息', 'error');
         return;
     }
-    
+
     if (captcha.toLowerCase() !== captchaCode.toLowerCase()) {
         showMessage('验证码错误', 'error');
         refreshCaptcha();
         return;
     }
-    
+
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+
     try {
         const response = await fetch('/api/messages', {
             method: 'POST',
@@ -130,30 +141,32 @@ async function submitMessage() {
             },
             body: JSON.stringify({ name, contact, content })
         });
-        
+
         if (!response.ok) {
             throw new Error(`服务器返回 ${response.status} ${response.statusText}`);
         }
-        
+
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await response.text();
             throw new Error(`响应格式错误，期望JSON但收到: ${text.substring(0, 100)}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             showMessage('留言提交成功！', 'success');
             document.getElementById('messageForm').reset();
             refreshCaptcha();
-            loadMessages();
         } else {
             showMessage(data.message || '提交失败，请稍后重试', 'error');
         }
     } catch (error) {
         showMessage('提交失败: ' + error.message, 'error');
         console.error('提交留言失败:', error.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
     }
 }
 
@@ -163,12 +176,12 @@ function showMessage(text, type) {
     if (existingMessage) {
         existingMessage.remove();
     }
-    
+
     const messageDiv = document.createElement('div');
     messageDiv.className = type === 'success' ? 'success-message' : 'error-message';
     messageDiv.textContent = text;
     container.insertBefore(messageDiv, container.firstChild);
-    
+
     setTimeout(() => {
         messageDiv.remove();
     }, 3000);
@@ -184,7 +197,7 @@ function formatTime(dateStr) {
     const date = new Date(dateStr);
     const now = new Date();
     const diff = now - date;
-    
+
     if (diff < 60000) {
         return '刚刚';
     } else if (diff < 3600000) {

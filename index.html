@@ -13,35 +13,11 @@
             <p>欢迎留下您的宝贵意见</p>
         </header>
 
-        <section class="form-section">
-            <h2>发表留言</h2>
-            <form id="messageForm">
-                <div class="form-group">
-                    <label for="name">姓名</label>
-                    <input type="text" id="name" name="name" required placeholder="请输入您的姓名">
-                </div>
-                <div class="form-group">
-                    <label for="contact">联系方式</label>
-                    <input type="text" id="contact" name="contact" required placeholder="请输入您的联系方式（电话/邮箱）">
-                </div>
-                <div class="form-group">
-                    <label for="content">留言内容</label>
-                    <textarea id="content" name="content" required placeholder="请输入留言内容" rows="4"></textarea>
-                </div>
-                <div class="form-group captcha-group">
-                    <label for="captcha">验证码</label>
-                    <div class="captcha-row">
-                        <input type="text" id="captcha" name="captcha" required placeholder="请输入验证码">
-                        <canvas id="captchaCanvas" onclick="refreshCaptcha()"></canvas>
-                    </div>
-                    <span class="captcha-hint">点击图片刷新验证码</span>
-                </div>
-                <button type="submit" class="submit-btn">提交留言</button>
-            </form>
-        </section>
-
         <section class="messages-section">
-            <h2>留言列表</h2>
+            <div class="section-header">
+                <h2>留言列表</h2>
+                <a href="submit.html" class="nav-btn">发表留言</a>
+            </div>
             <div id="messagesContainer">
                 <div class="loading">加载中...</div>
             </div>
