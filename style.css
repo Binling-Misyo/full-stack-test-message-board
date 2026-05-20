@@ -1,407 +1,330 @@
 /* ==============================================================
-   CSS 样式表（style.css）
-   作用：控制整个网站的外观和布局
+   留言板表单样式（style.css）
+   作用：控制提交留言页面（submit.html）的外观
+   样式参考：个人作品集（profile.css）的深色毛玻璃风格
    学习要点：
-     - 选择器：元素选择器、类选择器、ID选择器、伪类
-     - 盒模型：margin、padding、border
-     - 布局：flexbox 弹性布局
-     - 颜色：渐变色、阴影、透明度
-     - 动画：@keyframes 关键帧动画
-     - 响应式：@media 媒体查询
+     - 深色主题配色
+     - 毛玻璃效果（backdrop-filter: blur）
+     - 表单元素样式
+     - flexbox 布局
    ============================================================== */
 
-/* ===================== 全局重置 ===================== */
+/* ===================== CSS 变量 ===================== */
+:root {
+    --card-bg: rgba(18, 18, 28, 0.78);
+    --card-border: rgba(255, 255, 255, 0.14);
+    --text-primary: #f0f0f5;
+    --text-secondary: #c5c5d2;
+    --text-muted: #826c87;
+    --accent-blue: #5badf5;
+    --accent-yellow: #f5c842;
+    --accent-purple: #b78ce0;
+    --accent-green: #4de8a0;
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    --input-bg: rgba(255, 255, 255, 0.06);
+    --input-border: rgba(255, 255, 255, 0.15);
+    --input-focus-border: rgba(90, 170, 245, 0.6);
+}
 
-/* * 是通配选择器，选中页面上的所有元素 */
-/* margin: 0 和 padding: 0 清除浏览器默认的外边距和内边距 */
-/* box-sizing: border-box 让元素的宽高包含 padding 和 border，方便计算尺寸 */
+/* ===================== 全局重置 ===================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-
-/* ===================== 页面背景 ===================== */
-
-/* body 是整个页面的根元素 */
-/* font-family 设置字体，多个字体用逗号分隔，浏览器会按顺序使用第一个可用的 */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* background 设置背景，这里用了渐变色 */
-    /* linear-gradient 线性渐变：135deg 是角度，从 #667eea 渐变到 #764ba2 */
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    /* min-height: 100vh 最小高度占满整个视口（viewport height） */
-    /* vh 是相对单位，100vh = 浏览器窗口高度的 100% */
+    font-family: 'Inter', 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+    background: #0a0a14;
+    color: var(--text-primary);
     min-height: 100vh;
-    padding: 20px;  /* 页面四周留 20px 空白 */
+    padding: 20px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-
-/* ===================== 容器布局 ===================== */
-
-/* .container 是页面内容的容器 */
-/* 类选择器以 . 开头，选中所有 class="container" 的元素 */
+/* ===================== 容器 ===================== */
 .container {
-    max-width: 800px;  /* 最大宽度 800px，防止在大屏幕上太宽 */
-    margin: 0 auto;    /* margin: 0 auto 让元素水平居中 */
+    max-width: 600px;
+    margin: 0 auto;
+    padding-top: 5vh;
 }
 
-
-/* ===================== 头部标题 ===================== */
-
-/* header 是元素选择器，选中所有 <header> 标签 */
+/* ===================== 头部 ===================== */
 header {
-    text-align: center;  /* 文字居中 */
-    color: white;        /* 文字颜色白色 */
-    margin-bottom: 30px; /* 底部外边距 30px，和下面的内容拉开距离 */
+    text-align: center;
+    margin-bottom: 30px;
+    animation: fadeInDown 0.6s ease-out;
 }
 
-/* header h1 选中 header 内部的 h1 元素 */
-/* 后代选择器用空格分隔，表示"内部的" */
 header h1 {
-    font-size: 2.5em;  /* em 是相对单位，1em = 当前字体大小 */
-    margin-bottom: 10px;
-    /* text-shadow 文字阴影：x偏移 y偏移 模糊半径 颜色 */
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
 header p {
-    font-size: 1.2em;
-    opacity: 0.9;  /* opacity 透明度，0=完全透明，1=完全不透明 */
+    font-size: 1rem;
+    color: var(--text-secondary);
+    opacity: 0.9;
 }
 
-
-/* ===================== 内容卡片 ===================== */
-
-/* 同时选中 .form-section 和 .messages-section 两个类 */
-/* 逗号分隔表示"或"的关系 */
-.form-section, .messages-section {
-    background: white;           /* 白色背景 */
-    border-radius: 15px;        /* 圆角 15px */
-    padding: 30px;              /* 内边距 30px */
-    margin-bottom: 25px;        /* 底部外边距 */
-    /* box-shadow 盒子阴影：x偏移 y偏移 模糊半径 扩散半径 颜色 */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);  /* 轻微阴影，产生立体感 */
+/* ===================== 表单卡片 ===================== */
+.form-section {
+    background: var(--card-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.55s ease-out 0.1s both;
 }
 
-/* 卡片内部的 h2 标题样式 */
-.form-section h2, .messages-section h2 {
-    color: #333;
+/* ===================== 标题栏 ===================== */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 25px;
     padding-bottom: 15px;
-    /* border-bottom 底部边框，用来做分割线效果 */
-    border-bottom: 2px solid #eee;
+    border-bottom: 1px solid var(--card-border);
 }
 
+.section-header h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+}
 
-/* ===================== 表单样式 ===================== */
+/* ===================== 导航按钮 ===================== */
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 28px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.4px;
+    transition: all 0.22s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
 
-/* 每个表单项之间的间距 */
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ===================== 表单项 ===================== */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
 }
 
-/* label 标签：显示在输入框上方 */
 .form-group label {
-    display: block;          /* block 让标签独占一行 */
+    display: block;
     margin-bottom: 8px;
-    color: #555;
-    font-weight: 600;        /* 字体加粗 */
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
 }
 
-/* 输入框和文本域的通用样式 */
 .form-group input,
 .form-group textarea {
-    width: 100%;             /* 宽度占满父容器 */
-    padding: 12px 15px;      /* 内边距：上下12px 左右15px */
-    border: 2px solid #e0e0e0;  /* 边框：粗细 样式 颜色 */
-    border-radius: 8px;      /* 圆角 */
-    font-size: 16px;         /* 字体大小 */
-    /* transition 过渡动画：当属性变化时平滑过渡 */
-    /* 这里让 border-color 在 0.3 秒内平滑变化 */
-    transition: border-color 0.3s ease;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--text-primary);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none;
 }
 
-/* :focus 伪类：当输入框获得焦点（被点击选中）时 */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
 .form-group input:focus,
 .form-group textarea:focus {
-    outline: none;               /* 去掉浏览器默认的焦点轮廓 */
-    border-color: #667eea;       /* 边框变为紫色，和主题色一致 */
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 3px rgba(90, 170, 245, 0.15);
 }
 
-/* 文本域：允许用户垂直拖动调整大小 */
 .form-group textarea {
-    resize: vertical;     /* 只允许垂直方向调整 */
-    min-height: 100px;    /* 最小高度 */
+    resize: vertical;
+    min-height: 110px;
 }
-
 
 /* ===================== 验证码区域 ===================== */
-
 .captcha-group {
-    display: flex;               /* flex 弹性布局 */
-    flex-direction: column;      /* 子元素垂直排列 */
+    display: flex;
+    flex-direction: column;
 }
 
-/* 验证码输入框和图片放在同一行 */
 .captcha-row {
-    display: flex;      /* flex 布局让子元素水平排列 */
-    gap: 10px;          /* gap 是子元素之间的间距 */
-    align-items: center; /* 垂直居中对齐 */
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .captcha-row input {
-    flex: 1;            /* flex: 1 让输入框占据剩余空间 */
-    max-width: 200px;   /* 最大宽度 200px */
+    flex: 1;
 }
 
-/* canvas 验证码图片 */
 #captchaCanvas {
     width: 120px;
     height: 45px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    cursor: pointer;    /* 鼠标悬停时显示手型，提示可点击 */
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid var(--input-border);
+    flex-shrink: 0;
 }
 
 .captcha-hint {
-    font-size: 12px;
-    color: #888;
-    margin-top: 5px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 6px;
 }
-
 
 /* ===================== 提交按钮 ===================== */
-
 .submit-btn {
-    width: 100%;             /* 按钮宽度 100% */
-    padding: 14px;           /* 内边距 */
-    /* 渐变色背景，和页面背景呼应 */
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;            /* 文字颜色 */
-    border: none;            /* 去掉默认边框 */
-    border-radius: 8px;
-    font-size: 16px;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
     font-weight: 600;
-    cursor: pointer;         /* 手型光标 */
-    /* 过渡动画：transform 和 box-shadow 变化时平滑过渡 */
+    cursor: pointer;
+    letter-spacing: 0.5px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    min-height: 50px;
 }
 
-/* :hover 伪类：鼠标悬停时 */
 .submit-btn:hover {
-    transform: translateY(-2px);  /* 向上移动 2px，产生浮起效果 */
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);  /* 增强阴影 */
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(90, 170, 245, 0.35);
 }
 
-/* :active 伪类：鼠标按下时 */
 .submit-btn:active {
-    transform: translateY(0);  /* 回到原位，产生按下效果 */
+    transform: translateY(0);
 }
 
-/* :disabled 伪类：按钮被禁用时 */
 .submit-btn:disabled {
-    opacity: 0.7;           /* 半透明 */
-    cursor: not-allowed;    /* 禁止点击光标 */
-    transform: none;        /* 取消悬停效果 */
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
-
-/* ===================== 转圈动画（spinner） ===================== */
-
-/* spinner 默认隐藏 */
+/* ===================== 转圈动画 ===================== */
 .submit-btn .spinner {
-    display: none;           /* 不显示 */
-    width: 20px;
-    height: 20px;
-    /* border 画圆环：3px 半透明白色边框 */
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top-color: #fff;  /* 只有顶部边框是白色，形成缺口圆环 */
-    border-radius: 50%;      /* 圆形 */
-    /* animation 动画：名称 时长 速度曲线 是否循环 */
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto;          /* 水平居中 */
+    display: none;
+    width: 22px;
+    height: 22px;
+    border: 3px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
 }
 
-/* 当按钮有 .loading 类时，显示 spinner */
 .submit-btn.loading .spinner {
-    display: inline-block;   /* 显示为行内块级元素 */
+    display: inline-block;
 }
 
-/* 当按钮有 .loading 类时，隐藏按钮文字 */
 .submit-btn.loading .btn-text {
     display: none;
 }
 
-/* 当按钮有 .loading 类时，禁止所有鼠标事件 */
 .submit-btn.loading {
-    pointer-events: none;    /* 阻止所有点击事件 */
+    pointer-events: none;
 }
 
-/* @keyframes 定义动画关键帧 */
-/* spin 动画：从 0 度旋转到 360 度（一圈） */
 @keyframes spin {
     to {
-        transform: rotate(360deg);  /* 旋转 360 度 */
+        transform: rotate(360deg);
     }
 }
 
-
-/* ===================== 标题栏（带导航按钮） ===================== */
-
-/* section-header 是标题和按钮的容器，用 flex 布局放在一行 */
-.section-header {
-    display: flex;               /* flex 弹性布局 */
-    justify-content: space-between;  /* 两端对齐：标题在左，按钮在右 */
-    align-items: center;         /* 垂直居中 */
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #eee;  /* 底部分割线 */
-}
-
-/* 覆盖卡片 h2 的默认样式，因为现在 h2 在 section-header 内部 */
-.section-header h2 {
-    margin-bottom: 0;      /* 取消底部外边距 */
-    padding-bottom: 0;     /* 取消底部内边距 */
-    border-bottom: none;   /* 取消边框（由父容器统一控制） */
-}
-
-
-/* ===================== 导航按钮 ===================== */
-
-/* 导航按钮（看起来像按钮的链接） */
-.nav-btn {
-    display: inline-block;   /* 行内块级元素 */
-    padding: 10px 24px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    text-decoration: none;   /* 去掉链接的下划线 */
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.nav-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-}
-
-/* 返回按钮：比普通导航按钮更小巧 */
-.nav-back {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 8px 18px;   /* 更小的内边距 */
-    font-size: 13px;     /* 更小的字体 */
-}
-
-
-/* ===================== 留言列表项 ===================== */
-
-/* 每条留言的卡片 */
-.message-item {
-    background: #f9f9f9;           /* 浅灰色背景 */
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 15px;
-    border-left: 4px solid #667eea;  /* 左侧紫色竖条，装饰作用 */
-    transition: box-shadow 0.3s ease;
-}
-
-.message-item:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-/* 留言头部：姓名和时间放在一行 */
-.message-header {
-    display: flex;
-    justify-content: space-between;  /* 姓名在左，时间在右 */
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.message-name {
-    font-weight: 600;
-    color: #333;
-    font-size: 16px;
-}
-
-.message-time {
-    font-size: 12px;
-    color: #999;
-}
-
-.message-contact {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 10px;
-}
-
-.message-content {
-    color: #444;
-    line-height: 1.6;  /* 行高 1.6 倍，增加可读性 */
-}
-
-
-/* ===================== 状态提示 ===================== */
-
-/* 加载中的提示 */
-.loading {
-    text-align: center;
-    color: #999;
-    padding: 40px;
-}
-
-/* 没有留言时的提示 */
-.empty-message {
-    text-align: center;
-    color: #999;
-    padding: 40px;
-    font-size: 16px;
-}
-
-/* 成功提示（绿色） */
+/* ===================== 状态消息 ===================== */
 .success-message {
-    background: #d4edda;   /* 浅绿色背景 */
-    color: #155724;        /* 深绿色文字 */
-    padding: 15px;
-    border-radius: 8px;
+    background: rgba(77, 232, 160, 0.15);
+    color: #4de8a0;
+    border: 1px solid rgba(77, 232, 160, 0.3);
+    padding: 14px 18px;
+    border-radius: 10px;
     margin-bottom: 20px;
     text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    animation: fadeInUp 0.4s ease-out;
 }
 
-/* 错误提示（红色） */
 .error-message {
-    background: #f8d7da;   /* 浅红色背景 */
-    color: #721c24;        /* 深红色文字 */
-    padding: 15px;
-    border-radius: 8px;
+    background: rgba(255, 100, 100, 0.15);
+    color: #ff7a7a;
+    border: 1px solid rgba(255, 100, 100, 0.3);
+    padding: 14px 18px;
+    border-radius: 10px;
     margin-bottom: 20px;
     text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    animation: fadeInUp 0.4s ease-out;
 }
 
+/* ===================== 动画 ===================== */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 
-/* ===================== 响应式设计 ===================== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 
-/* @media 媒体查询：当屏幕宽度小于等于 600px 时应用这些样式 */
-/* 主要用于手机等小屏幕设备 */
+/* ===================== 响应式 ===================== */
 @media (max-width: 600px) {
     .container {
-        padding: 0 15px;  /* 小屏幕上增加左右内边距 */
+        padding: 0 10px;
+        padding-top: 2vh;
     }
 
     header h1 {
-        font-size: 2em;   /* 小屏幕上标题缩小 */
+        font-size: 1.6rem;
     }
 
-    /* 验证码行：在小屏幕上改为垂直排列 */
+    .form-section {
+        padding: 20px;
+    }
+
     .captcha-row {
-        flex-direction: column;  /* 改为垂直排列 */
-        align-items: flex-start;
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .captcha-row input {
-        max-width: 100%;         /* 宽度占满 */
-        margin-bottom: 10px;
+        max-width: 100%;
+    }
+
+    #captchaCanvas {
+        width: 100%;
+        height: 50px;
     }
 }
